@@ -29,7 +29,9 @@ libraryDependencies ++= Seq(
 
 resolvers ++= Seq(
   "geosolutions" at "http://maven.geo-solutions.it/",
-  "osgeo" at "http://download.osgeo.org/webdav/geotools/"
+  "osgeo" at "http://download.osgeo.org/webdav/geotools/",
+  "boundlessgeo" at "https://boundless.artifactoryonline.com/boundless/main",
+  "geowave" at "http://geowave-maven.s3-website-us-east-1.amazonaws.com/release"
 )
 resolvers += Resolver.sonatypeRepo("releases")
 
@@ -42,6 +44,8 @@ libraryDependencies ++= Seq(
   "org.geotools" % "gt-geotiff" % Version.geotools,
   "org.geotools" % "gt-main" % Version.geotools,
   "org.geotools" % "gt-referencing" % Version.geotools,
+  "mil.nga.giat" % "geowave-adapter-vector" % "0.9.1",
+  "mil.nga.giat" % "geowave-datastore-accumulo" % "0.9.1",
   "com.github.melrief" %% "purecsv" % "0.0.6",
   compilerPlugin("org.scalamacros" % "paradise" % "2.0.1" cross CrossVersion.full)
 )
