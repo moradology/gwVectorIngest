@@ -25,13 +25,13 @@ lazy val commonSettings = Seq(
     "osgeo" at "http://download.osgeo.org/webdav/geotools/",
     "boundlessgeo" at "https://boundless.artifactoryonline.com/boundless/main",
     "geowave" at "http://geowave-maven.s3-website-us-east-1.amazonaws.com/release"
-  )
+  ),
   resolvers += Resolver.sonatypeRepo("releases"),
 
   libraryDependencies ++= Seq(
     "com.azavea.geotrellis" %% "geotrellis-accumulo" % Version.geotrellis,
     "com.azavea.geotrellis" %% "geotrellis-spark" % Version.geotrellis,
-    "org.apache.spark" %% "spark-core" % "1.5.2" % "provided",
+    //"org.apache.spark" %% "spark-core" % "1.5.2" % "provided",
     "org.geotools" % "gt-coverage" % Version.geotools,
     "org.geotools" % "gt-epsg-hsql" % Version.geotools,
     "org.geotools" % "gt-geotiff" % Version.geotools,
