@@ -121,7 +121,7 @@ object GdeltIngestMain {
           List(scala.io.Source.fromFile(filename))
     }).map(_.getLines)
 
-    val maybeBAO = Try(GdeltIngest.getAccumuloOperationsInstance("leader","instance","root","password","gwGDELT"))
+    val maybeBAO = Try(GdeltIngest.getAccumuloOperationsInstance("localhost","geowave","root","password","gwGDELT"))
     if (maybeBAO.isFailure) {
       println("Could not create Accumulo instance")
       println(maybeBAO)

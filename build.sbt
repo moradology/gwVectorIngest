@@ -39,7 +39,7 @@ lazy val commonSettings = Seq(
     "org.geotools" % "gt-referencing" % Version.geotools,
     "mil.nga.giat" % "geowave-adapter-vector" % "0.9.1",
     "mil.nga.giat" % "geowave-datastore-accumulo" % "0.9.1",
-    "com.github.melrief" %% "purecsv" % "0.0.6",
+    "org.apache.accumulo" % "accumulo-monitor" % "1.7.0",
     compilerPlugin("org.scalamacros" % "paradise" % "2.0.1" cross CrossVersion.full)
   ),
 
@@ -53,6 +53,8 @@ lazy val commonSettings = Seq(
     case "META-INF\\MANIFEST.MF" => MergeStrategy.discard
     case "META-INF/ECLIPSEF.RSA" => MergeStrategy.discard
     case "META-INF/ECLIPSEF.SF" => MergeStrategy.discard
+    case "META-INF/BCKEY.SF" => MergeStrategy.discard
+    case "META-INF/BCKEY.DSA" => MergeStrategy.discard
     case _ => MergeStrategy.first
   }
   
@@ -65,4 +67,7 @@ lazy val ingest = Project("ingest", file("ingest"))
   .settings(commonSettings: _*)
 
 lazy val rdd = Project("rdd", file("rdd"))
+  .settings(commonSettings: _*)
+
+lazy val minicluster = Project("minicluster", file("minicluster"))
   .settings(commonSettings: _*)
