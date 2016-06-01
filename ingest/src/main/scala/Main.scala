@@ -1,4 +1,4 @@
-package com.example.ingest.vector
+package com.example.vector.ingest
 
 import mil.nga.giat.geowave.core.geotime.ingest._
 import mil.nga.giat.geowave.core.store._
@@ -14,6 +14,8 @@ import org.opengis.feature.simple._
 import com.vividsolutions.jts.geom.Coordinate
 
 import scala.util.Try
+
+import com.example.vector._
 
 import java.util.zip._
 import scala.collection.JavaConversions._

@@ -1,9 +1,8 @@
-package com.example.ingest.vector
+package com.example.vector
 
 import scala.util.Try
 
 object GDeltLine {
-
   val gdeltCodeNames = List("GlobalEventId",                // 0
                             "Day",                          // 1
                             "MonthYear",                    // 2
@@ -64,8 +63,8 @@ object GDeltLine {
                             "SourceURL")                    // 57
 
   def apply(arr: Array[String]): GDeltLine = {
-    def grabI(s: String): Int = Try(s.toInt).getOrElse(0)
-    def grabD(s: String): Double = Try(s.toDouble).getOrElse(0.0)
+    def grabI(s: String): Integer = Try(s.toInt: Integer).getOrElse(0: Integer)
+    def grabD(s: String): java.lang.Double = Try(s.toDouble: java.lang.Double).getOrElse(0.0: java.lang.Double)
 
     new GDeltLine (grabI(arr(0)),  grabI(arr(1)),  grabI(arr(2)),  grabI(arr(3)),  grabD(arr(4)),
                    arr(5),         arr(6),         arr(7),         arr(8),         arr(9),
@@ -82,34 +81,34 @@ object GDeltLine {
   }
 }
 
-class GDeltLine (val globalEventId: Int,           val day: Int,
-                 val monthYear: Int,               val year: Int,
-                 val fractionDate: Double,         val actor1Code: String,
-                 val actor1Name: String,           val actor1CountryCode: String,
-                 val actor1KnownGroupCode: String, val actor1EthnicCode: String,
-                 val actor1Religion1Code: String,  val actor1Religion2Code: String,
-                 val actor1Type1Code: String,      val actor1Type2Code: String,
-                 val actor1Type3Code: String,      val actor2Code: String,
-                 val actor2Name: String,           val actor2CountryCode: String,
-                 val actor2KnownGroupCode: String, val actor2EthnicCode: String,
-                 val actor2Religion1Code: String,  val actor2Religion2Code: String,
-                 val actor2Type1Code: String,      val actor2Type2Code: String,
-                 val actor2Type3Code: String,      val isRootEvent: Int,
-                 val eventCode: String,            val eventBaseCode: String,
-                 val eventRootCode: String,        val quadClass: Int,
-                 val goldsteinScale: Double,       val numMentions: Int,
-                 val numSources: Int,              val numArticles: Int,
-                 val avgTone: Double,              val actor1Geo_Type: Int,
-                 val actor1Geo_Fullname: String,   val actor1Geo_CountryCode: String,
-                 val actor1Geo_ADM1Code: String,   val actor1Geo_Lat: Double,
-                 val actor1Geo_Long: Double,       val actor1Geo_FeatureID: Int,
-                 val actor2Geo_Type: Int,          val actor2Geo_Fullname: String,
-                 val actor2Geo_CountryCode: String,val actor2Geo_ADM1Code: String,
-                 val actor2Geo_Lat: Double,        val actor2Geo_Long: Double,
-                 val actor2Geo_FeatureID: Int,     val actionGeo_Type: Int,
-                 val actionGeo_Fullname: String,   val actionGeo_CountryCode: String,
-                 val actionGeo_ADM1Code: String,   val actionGeo_Lat: Double,
-                 val actionGeo_Long: Double,       val actionGeo_FeatureID: Int,
-                 val dateAdded: Int,               val sourceURL: String)
+class GDeltLine (val globalEventId: Integer,           val day: Integer,
+                 val monthYear: Integer,               val year: Integer,
+                 val fractionDate: java.lang.Double,   val actor1Code: String,
+                 val actor1Name: String,               val actor1CountryCode: String,
+                 val actor1KnownGroupCode: String,     val actor1EthnicCode: String,
+                 val actor1Religion1Code: String,      val actor1Religion2Code: String,
+                 val actor1Type1Code: String,          val actor1Type2Code: String,
+                 val actor1Type3Code: String,          val actor2Code: String,
+                 val actor2Name: String,               val actor2CountryCode: String,
+                 val actor2KnownGroupCode: String,     val actor2EthnicCode: String,
+                 val actor2Religion1Code: String,      val actor2Religion2Code: String,
+                 val actor2Type1Code: String,          val actor2Type2Code: String,
+                 val actor2Type3Code: String,          val isRootEvent: Integer,
+                 val eventCode: String,                val eventBaseCode: String,
+                 val eventRootCode: String,            val quadClass: Integer,
+                 val goldsteinScale: java.lang.Double, val numMentions: Integer,
+                 val numSources: Integer,              val numArticles: Integer,
+                 val avgTone: java.lang.Double,        val actor1Geo_Type: Integer,
+                 val actor1Geo_Fullname: String,       val actor1Geo_CountryCode: String,
+                 val actor1Geo_ADM1Code: String,       val actor1Geo_Lat: java.lang.Double,
+                 val actor1Geo_Long: java.lang.Double, val actor1Geo_FeatureID: Integer,
+                 val actor2Geo_Type: Integer,          val actor2Geo_Fullname: String,
+                 val actor2Geo_CountryCode: String,    val actor2Geo_ADM1Code: String,
+                 val actor2Geo_Lat: java.lang.Double,  val actor2Geo_Long: java.lang.Double,
+                 val actor2Geo_FeatureID: Integer,     val actionGeo_Type: Integer,
+                 val actionGeo_Fullname: String,       val actionGeo_CountryCode: String,
+                 val actionGeo_ADM1Code: String,       val actionGeo_Lat: java.lang.Double,
+                 val actionGeo_Long: java.lang.Double, val actionGeo_FeatureID: Integer,
+                 val dateAdded: Integer,               val sourceURL: String)
   
 

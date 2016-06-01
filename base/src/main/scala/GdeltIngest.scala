@@ -1,4 +1,4 @@
-package com.example.ingest.vector
+package com.example.vector
 
 import org.apache.log4j.Logger
 
@@ -88,15 +88,15 @@ object GdeltIngest {
     // having to handle geometries.
 
     // GlobalEventId
-    builder.add(ab.binding(classOf[Int]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(0)))
+    builder.add(ab.binding(classOf[Integer]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(0)))
     // Day
-    builder.add(ab.binding(classOf[Int]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(1)))
+    builder.add(ab.binding(classOf[Integer]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(1)))
     // MonthYear
-    builder.add(ab.binding(classOf[Int]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(2)))
+    builder.add(ab.binding(classOf[Integer]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(2)))
     // Year
-    builder.add(ab.binding(classOf[Int]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(3)))
+    builder.add(ab.binding(classOf[Integer]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(3)))
     // FractionDate
-    builder.add(ab.binding(classOf[Double]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(4)))
+    builder.add(ab.binding(classOf[java.lang.Double]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(4)))
     // Actor1Code
     builder.add(ab.binding(classOf[String]).buildDescriptor(GDeltLine.gdeltCodeNames(5)))
     // Actor1Name
@@ -138,7 +138,7 @@ object GdeltIngest {
     // Actor2Type3Code
     builder.add(ab.binding(classOf[String]).buildDescriptor(GDeltLine.gdeltCodeNames(24)))
     // IsRootEvent
-    builder.add(ab.binding(classOf[Int]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(25)))
+    builder.add(ab.binding(classOf[Integer]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(25)))
     // EventCode
     builder.add(ab.binding(classOf[String]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(26)))
     // EventBaseCode
@@ -146,19 +146,19 @@ object GdeltIngest {
     // EventRootCode
     builder.add(ab.binding(classOf[String]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(28)))
     // QuadClass
-    builder.add(ab.binding(classOf[Int]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(29)))
+    builder.add(ab.binding(classOf[Integer]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(29)))
     // GoldsteinScale
-    builder.add(ab.binding(classOf[Double]).buildDescriptor(GDeltLine.gdeltCodeNames(30)))
+    builder.add(ab.binding(classOf[java.lang.Double]).buildDescriptor(GDeltLine.gdeltCodeNames(30)))
     // NumMentions
-    builder.add(ab.binding(classOf[Int]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(31)))
+    builder.add(ab.binding(classOf[Integer]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(31)))
     // NumSources
-    builder.add(ab.binding(classOf[Int]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(32)))
+    builder.add(ab.binding(classOf[Integer]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(32)))
     // NumArticles
-    builder.add(ab.binding(classOf[Int]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(33)))
+    builder.add(ab.binding(classOf[Integer]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(33)))
     // AvgTone
-    builder.add(ab.binding(classOf[Double]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(34)))
+    builder.add(ab.binding(classOf[java.lang.Double]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(34)))
     // Actor1Geo_Type
-    builder.add(ab.binding(classOf[Int]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(35)))
+    builder.add(ab.binding(classOf[Integer]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(35)))
     // Actor1Geo_Fullname
     builder.add(ab.binding(classOf[String]).buildDescriptor(GDeltLine.gdeltCodeNames(36)))
     // Actor1Geo_CountryCode
@@ -166,13 +166,13 @@ object GdeltIngest {
     // Actor1Geo_ADM1Code
     builder.add(ab.binding(classOf[String]).buildDescriptor(GDeltLine.gdeltCodeNames(38)))
     // Actor1Geo_Lat
-    builder.add(ab.binding(classOf[Double]).buildDescriptor(GDeltLine.gdeltCodeNames(39)))
+    builder.add(ab.binding(classOf[java.lang.Double]).buildDescriptor(GDeltLine.gdeltCodeNames(39)))
     // Actor1Geo_Long
-    builder.add(ab.binding(classOf[Double]).buildDescriptor(GDeltLine.gdeltCodeNames(40)))
+    builder.add(ab.binding(classOf[java.lang.Double]).buildDescriptor(GDeltLine.gdeltCodeNames(40)))
     // Actor1Geo_FeatureID
-    builder.add(ab.binding(classOf[Int]).buildDescriptor(GDeltLine.gdeltCodeNames(41)))
+    builder.add(ab.binding(classOf[Integer]).buildDescriptor(GDeltLine.gdeltCodeNames(41)))
     // Actor2Geo_Type
-    builder.add(ab.binding(classOf[Int]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(42)))
+    builder.add(ab.binding(classOf[Integer]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(42)))
     // Actor2Geo_Fullname
     builder.add(ab.binding(classOf[String]).buildDescriptor(GDeltLine.gdeltCodeNames(43)))
     // Actor2Geo_CountryCode
@@ -180,13 +180,13 @@ object GdeltIngest {
     // Actor2Geo_ADM1Code
     builder.add(ab.binding(classOf[String]).buildDescriptor(GDeltLine.gdeltCodeNames(45)))
     // Actor2Geo_Lat
-    builder.add(ab.binding(classOf[Double]).buildDescriptor(GDeltLine.gdeltCodeNames(46)))
+    builder.add(ab.binding(classOf[java.lang.Double]).buildDescriptor(GDeltLine.gdeltCodeNames(46)))
     // Actor2Geo_Long
-    builder.add(ab.binding(classOf[Double]).buildDescriptor(GDeltLine.gdeltCodeNames(47)))
+    builder.add(ab.binding(classOf[java.lang.Double]).buildDescriptor(GDeltLine.gdeltCodeNames(47)))
     // Actor2Geo_FeatureID
-    builder.add(ab.binding(classOf[Int]).buildDescriptor(GDeltLine.gdeltCodeNames(48)))
+    builder.add(ab.binding(classOf[Integer]).buildDescriptor(GDeltLine.gdeltCodeNames(48)))
     // ActionGeo_Type
-    builder.add(ab.binding(classOf[Int]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(49)))
+    builder.add(ab.binding(classOf[Integer]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(49)))
     // ActionGeo_Fullname
     builder.add(ab.binding(classOf[String]).buildDescriptor(GDeltLine.gdeltCodeNames(50)))
     // ActionGeo_CountryCode
@@ -194,13 +194,13 @@ object GdeltIngest {
     // ActionGeo_ADM1Code
     builder.add(ab.binding(classOf[String]).buildDescriptor(GDeltLine.gdeltCodeNames(52)))
     // ActionGeo_Lat
-    builder.add(ab.binding(classOf[Double]).buildDescriptor(GDeltLine.gdeltCodeNames(53)))
+    builder.add(ab.binding(classOf[java.lang.Double]).buildDescriptor(GDeltLine.gdeltCodeNames(53)))
     // ActionGeo_Long
-    builder.add(ab.binding(classOf[Double]).buildDescriptor(GDeltLine.gdeltCodeNames(54)))
+    builder.add(ab.binding(classOf[java.lang.Double]).buildDescriptor(GDeltLine.gdeltCodeNames(54)))
     // ActionGeo_FeatureID
-    builder.add(ab.binding(classOf[Int]).buildDescriptor(GDeltLine.gdeltCodeNames(55)))
+    builder.add(ab.binding(classOf[Integer]).buildDescriptor(GDeltLine.gdeltCodeNames(55)))
     // DateAdded
-    builder.add(ab.binding(classOf[Int]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(56)))
+    builder.add(ab.binding(classOf[Integer]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(56)))
     // SourceURL
     builder.add(ab.binding(classOf[String]).nillable(false).buildDescriptor(GDeltLine.gdeltCodeNames(57)))
 

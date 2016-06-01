@@ -1,5 +1,3 @@
-name := "geowave-vector-ingest"
-
 lazy val commonSettings = Seq(
   version := "0.1.0",
   scalaVersion := "2.10.6",
@@ -63,11 +61,16 @@ lazy val commonSettings = Seq(
 lazy val root = Project("gwVectorIngest", file("."))
   .settings(commonSettings: _*)
 
+lazy val base = Project("base", file("base"))
+  .settings(commonSettings: _*)
+
 lazy val ingest = Project("ingest", file("ingest"))
   .settings(commonSettings: _*)
+  .dependsOn(base)
 
 lazy val rdd = Project("rdd", file("rdd"))
   .settings(commonSettings: _*)
+  .dependsOn(base)
 
 lazy val minicluster = Project("minicluster", file("minicluster"))
   .settings(commonSettings: _*)

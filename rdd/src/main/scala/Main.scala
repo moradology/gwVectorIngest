@@ -1,4 +1,4 @@
-package com.example.rdd.vector
+package com.example.vector.rdd
 
 import com.vividsolutions.jts.{geom => jts}
 
@@ -12,11 +12,18 @@ import mil.nga.giat.geowave.datastore.accumulo._
 import mil.nga.giat.geowave.datastore.accumulo.index.secondary.AccumuloSecondaryIndexDataStore
 import mil.nga.giat.geowave.datastore.accumulo.metadata._
 import mil.nga.giat.geowave.adapter.vector._
+import mil.nga.giat.geowave.mapreduce.input._
+import mil.nga.giat.geowave.core.store.operations.remote.options.DataStorePluginOptions
+import mil.nga.giat.geowave.datastore.accumulo.operations.config.AccumuloRequiredOptions
 
 import org.geotools.feature.simple._
 import org.opengis.feature.simple._
 
-import com.example.ingest.vector._
+import geotrellis.spark.util.SparkUtils
+import org.apache.hadoop.mapreduce.Job
+import org.apache.hadoop.conf.Configuration
+
+import com.example.vector._
 
 import java.io.Closeable
 import scala.util.control.NonFatal
@@ -48,7 +55,13 @@ object GdeltRddMain {
 
   def main(args: Array[String]): Unit = {
 
-    val maybeBAO = Try(GdeltIngest.getAccumuloOperationsInstance("leader","instance","root","password","gwGDELT"))
+    val zookeeper = Try(args(0)).getOrElse("localhost")
+    val instance = Try(args(1)).getOrElse("geowave")
+    val username = Try(args(2)).getOrElse("root")
+    val password = Try(args(3)).getOrElse("password")
+    val namespace = Try(args(4)).getOrElse("gwGDELT")
+
+    val maybeBAO = Try(GdeltIngest.getAccumuloOperationsInstance(zookeeper, instance, username, password, namespace))
     if (maybeBAO.isFailure) {
       println("Could not create Accumulo instance")
       println(maybeBAO)
@@ -81,6 +94,31 @@ object GdeltRddMain {
       }
     }
 
-    println (len)
+    implicit val sc = SparkUtils.createSparkContext("gwVectorIngestRDD")
+    println("SparkContext created!")
+
+    val aro = new AccumuloRequiredOptions
+    aro.setZookeeper(zookeeper)
+    aro.setInstance(instance)
+    aro.setUser(username)
+    aro.setPassword(password)
+    aro.setGeowaveNamespace(namespace)
+
+    val dspo = new DataStorePluginOptions
+    dspo.selectPlugin("accumulo")
+    dspo.setFactoryOptions(aro)
+
+    val configOptions = dspo.getFactoryOptionsAsMap
+    val config = Job.getInstance(sc.hadoopConfiguration).getConfiguration
+    GeoWaveInputFormat.setStoreConfigOptions(config, configOptions)
+    GeoWaveInputFormat.setQuery(config, new SpatialQuery(utah))
+    GeoWaveInputFormat.setQueryOptions(config, new QueryOptions(adapter, index))
+    val rdd = sc.newAPIHadoopRDD(config,
+                                 classOf[GeoWaveInputFormat[GDeltLine]],
+                                 classOf[GeoWaveInputKey],
+                                 classOf[GDeltLine])
+ 
+    println("\tSize of query response from GeoWave: " ++ len.toString)
+    println("\tSize of query response from RDD:     " ++ rdd.count.toString)
   }
 }

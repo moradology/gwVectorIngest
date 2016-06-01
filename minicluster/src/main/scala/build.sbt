@@ -1,3 +1,5 @@
+name := "Minicluster"
+
 libraryDependencies += "org.apache.accumulo" % "accumulo-monitor" % "1.7.0"
 
 assemblyMergeStrategy in assembly := {
