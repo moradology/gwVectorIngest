@@ -15,6 +15,7 @@ import mil.nga.giat.geowave.adapter.vector._
 import mil.nga.giat.geowave.mapreduce.input._
 import mil.nga.giat.geowave.core.store.operations.remote.options.DataStorePluginOptions
 import mil.nga.giat.geowave.datastore.accumulo.operations.config.AccumuloRequiredOptions
+import mil.nga.giat.geowave.datastore.accumulo.operations.config.AccumuloOptions
 
 import org.geotools.feature.simple._
 import org.opengis.feature.simple._
@@ -22,6 +23,8 @@ import org.opengis.feature.simple._
 import geotrellis.spark.util.SparkUtils
 import org.apache.hadoop.mapreduce.Job
 import org.apache.hadoop.conf.Configuration
+import org.apache.log4j.Logger
+import org.apache.log4j.Level
 
 import com.example.vector._
 
@@ -54,6 +57,9 @@ object TryWith {
 object GdeltRddMain {
 
   def main(args: Array[String]): Unit = {
+
+    //Logger.getRootLogger().setLevel(Level.WARN)
+    
 
     val zookeeper = Try(args(0)).getOrElse("localhost")
     val instance = Try(args(1)).getOrElse("geowave")
@@ -97,12 +103,17 @@ object GdeltRddMain {
     implicit val sc = SparkUtils.createSparkContext("gwVectorIngestRDD")
     println("SparkContext created!")
 
+    val options = new AccumuloOptions
+    options.setPersistDataStatistics(false)
+    //options.setUseAltIndex(true)
+
     val aro = new AccumuloRequiredOptions
     aro.setZookeeper(zookeeper)
     aro.setInstance(instance)
     aro.setUser(username)
     aro.setPassword(password)
     aro.setGeowaveNamespace(namespace)
+    aro.setAdditionalOptions(options)
 
     val dspo = new DataStorePluginOptions
     dspo.selectPlugin("accumulo")
@@ -110,15 +121,16 @@ object GdeltRddMain {
 
     val configOptions = dspo.getFactoryOptionsAsMap
     val config = Job.getInstance(sc.hadoopConfiguration).getConfiguration
+    GeoWaveInputFormat.setDataStoreName(config, "accumulo")
     GeoWaveInputFormat.setStoreConfigOptions(config, configOptions)
     GeoWaveInputFormat.setQuery(config, new SpatialQuery(utah))
     GeoWaveInputFormat.setQueryOptions(config, new QueryOptions(adapter, index))
     val rdd = sc.newAPIHadoopRDD(config,
-                                 classOf[GeoWaveInputFormat[GDeltLine]],
+                                 classOf[GeoWaveInputFormat[SimpleFeature]],
                                  classOf[GeoWaveInputKey],
-                                 classOf[GDeltLine])
+                                 classOf[SimpleFeature])
  
-    println("\tSize of query response from GeoWave: " ++ len.toString)
     println("\tSize of query response from RDD:     " ++ rdd.count.toString)
+    println("\tSize of query response from GeoWave: " ++ len.toString)
   }
 }

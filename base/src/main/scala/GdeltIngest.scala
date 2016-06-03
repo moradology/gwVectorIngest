@@ -9,6 +9,8 @@ import mil.nga.giat.geowave.datastore.accumulo.index.secondary._
 import mil.nga.giat.geowave.core.store._
 import mil.nga.giat.geowave.core.store.index._
 import mil.nga.giat.geowave.core.geotime.ingest._
+import mil.nga.giat.geowave.datastore.accumulo.operations.config.AccumuloOptions
+
 import org.geotools.feature.AttributeTypeBuilder
 import org.geotools.feature.simple._
 import org.opengis.feature.simple._
@@ -25,13 +27,18 @@ object GdeltIngest {
     // namespace as the data. The intent here
     // is that all data is discoverable without configuration/classes stored
     // outside of the accumulo instance.
+    val options = new AccumuloOptions
+    options.setPersistDataStatistics(true)
+    //options.setUseAltIndex(true)
+
     return new AccumuloDataStore(
       new AccumuloIndexStore(instance),
       new AccumuloAdapterStore(instance),
       new AccumuloDataStatisticsStore(instance),
       new AccumuloSecondaryIndexDataStore(instance),
       new AccumuloAdapterIndexMappingStore(instance),
-      instance);
+      instance,
+      options)
   }
 
   def getAccumuloOperationsInstance(

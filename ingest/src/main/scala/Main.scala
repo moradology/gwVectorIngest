@@ -106,6 +106,8 @@ object GdeltIngestMain {
         indexWriter.write(gdsf)
       }
     }
+
+    indexWriter.close
   }
 
   def main(args: Array[String]): Unit = {
