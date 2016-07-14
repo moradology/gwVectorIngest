@@ -1,7 +1,12 @@
 package com.example.vector.rdd
 
-import com.vividsolutions.jts.{geom => jts}
+import geotrellis.spark.util.SparkUtils
+import geotrellis.spark._
+import geotrellis.spark.io.geowave._
+import geotrellis.vector._
+import geotrellis.geotools._
 
+import com.vividsolutions.jts.{geom => jts}
 import mil.nga.giat.geowave.core.geotime.ingest._
 import mil.nga.giat.geowave.core.store._
 import mil.nga.giat.geowave.core.store.query._
@@ -16,57 +21,91 @@ import mil.nga.giat.geowave.mapreduce.input._
 import mil.nga.giat.geowave.core.store.operations.remote.options.DataStorePluginOptions
 import mil.nga.giat.geowave.datastore.accumulo.operations.config.AccumuloRequiredOptions
 import mil.nga.giat.geowave.datastore.accumulo.operations.config.AccumuloOptions
-
+import org.geotools.feature._
 import org.geotools.feature.simple._
 import org.opengis.feature.simple._
-
-import geotrellis.spark.util.SparkUtils
 import org.apache.hadoop.mapreduce.Job
 import org.apache.hadoop.conf.Configuration
 import org.apache.log4j.Logger
 import org.apache.log4j.Level
-
 import com.example.vector._
+import org.apache.spark.rdd._
 
 import java.io.Closeable
 import scala.util.control.NonFatal
 import scala.util.{Failure, Try, Success}
 
-object TryWith {
-  def apply[C <: Closeable, R](resource: => C)(f: C => R): Try[R] =
-    Try(resource).flatMap(resourceInstance => {
-      try {
-        val returnValue = f(resourceInstance)
-        Try(resourceInstance.close()).map(_ => returnValue)
-      }
-      catch {
-        case NonFatal(exceptionInFunction) =>
-          try {
-            resourceInstance.close()
-            Failure(exceptionInFunction)
-          }
-          catch {
-            case NonFatal(exceptionInClose) =>
-              exceptionInFunction.addSuppressed(exceptionInClose)
-              Failure(exceptionInFunction)
-          }
-      }
-    })
-}
 
-object GdeltRddMain {
+object RddWrite {
 
-  def main(args: Array[String]): Unit = {
+  val zookeeper = "localhost"
+  val instance = "geowave"
+  val username = "root"
+  val password = "password"
+  val namespace = "gwGDELT"
+  val gdeltFeatureType = GdeltIngest.createGdeltFeatureType
+  val utah = (new jts.GeometryFactory()).toGeometry(new jts.Envelope(-114, -109, 37, 42))
 
-    //Logger.getRootLogger().setLevel(Level.WARN)
-    
+  def writeGT() = {
+    // Necessary for going between Feature and SimpleFeature
+    implicit def id(x: Map[String, Any]): Seq[(String, Any)] = x.toSeq
+    val philly = Point(-75.5859375, 40.713955826286046)
 
-    val zookeeper = Try(args(0)).getOrElse("localhost")
-    val instance = Try(args(1)).getOrElse("geowave")
-    val username = Try(args(2)).getOrElse("root")
-    val password = Try(args(3)).getOrElse("password")
-    val namespace = Try(args(4)).getOrElse("gwGDELT")
+    val builder = new SimpleFeatureTypeBuilder()
+    val ab = new AttributeTypeBuilder()
+    builder.setName("TestType")
+    builder.add(ab.binding(classOf[jts.Point]).nillable(false).buildDescriptor("geometry"))
+    val featureType = builder.buildFeatureType()
 
+    val features = Array(Feature(philly, Map[String, Any]()))
+    val featureRDD = sc.parallelize(features)
+
+    val gtReadRDD1 = GeoWaveFeatureRDDReader.read(
+      zookeeper,
+      instance,
+      username,
+      password,
+      "testpoint",
+      featureType
+    )
+    println(s"The first count from GT: ${gtReadRDD1.count()}")
+
+    GeoWaveFeatureRDDWriter.write(
+      featureRDD,
+      zookeeper,
+      instance,
+      username,
+      password,
+      "testpoint",
+      featureType
+    )
+
+    val gtReadRDD2 = GeoWaveFeatureRDDReader.read(
+      zookeeper,
+      instance,
+      username,
+      password,
+      "testpoint",
+      featureType
+    )
+    println(s"The second count from GT: ${gtReadRDD2.count()}")
+  }
+
+  def readGT() = {
+    val gtRDD = GeoWaveFeatureRDDReader.read(
+      zookeeper,
+      instance,
+      username,
+      password,
+      namespace,
+      gdeltFeatureType,
+      new SpatialQuery(utah)
+    )
+    println(s"The count from GT: ${gtRDD.count()}")
+  }
+
+  def readGW() = {
+    // Writing to our store with GW methods
     val maybeBAO = Try(GdeltIngest.getAccumuloOperationsInstance(zookeeper, instance, username, password, namespace))
     if (maybeBAO.isFailure) {
       println("Could not create Accumulo instance")
@@ -74,19 +113,14 @@ object GdeltRddMain {
       System.exit(-1)
     }
     val bao = maybeBAO.get
+
     val ds = GdeltIngest.getGeowaveDataStore(bao)
+    val adapter: FeatureDataAdapter = GdeltIngest.createDataAdapter(gdeltFeatureType)
 
-    val gf = new jts.GeometryFactory()
-    val utah = gf.toGeometry(new jts.Envelope(-114, -109, 37, 42))
+    val result = Try(ds.query(new QueryOptions(adapter, GdeltIngest.createSpatialIndex), new SpatialQuery(utah)))
 
-    val adapter: FeatureDataAdapter = GdeltIngest.createDataAdapter(GdeltIngest.createGdeltFeatureType)
-    val index: PrimaryIndex = GdeltIngest.createSpatialIndex
-
-    val result = Try (ds.query (new QueryOptions(adapter, index), new SpatialQuery(utah))) 
-
-    val len = result match { 
+    val len = result match {
       case Success(results) => {
-        println("Success")
         var s = 0
         while (results.hasNext) {
           s += 1
@@ -99,9 +133,6 @@ object GdeltRddMain {
         0
       }
     }
-
-    implicit val sc = SparkUtils.createSparkContext("gwVectorIngestRDD")
-    println("SparkContext created!")
 
     val options = new AccumuloOptions
     options.setPersistDataStatistics(false)
@@ -124,13 +155,22 @@ object GdeltRddMain {
     GeoWaveInputFormat.setDataStoreName(config, "accumulo")
     GeoWaveInputFormat.setStoreConfigOptions(config, configOptions)
     GeoWaveInputFormat.setQuery(config, new SpatialQuery(utah))
-    GeoWaveInputFormat.setQueryOptions(config, new QueryOptions(adapter, index))
-    val rdd = sc.newAPIHadoopRDD(config,
+    GeoWaveInputFormat.setQueryOptions(config, new QueryOptions(adapter, GdeltIngest.createSpatialIndex))
+    val rdd: RDD[SimpleFeature] = sc.newAPIHadoopRDD(config,
                                  classOf[GeoWaveInputFormat[SimpleFeature]],
                                  classOf[GeoWaveInputKey],
-                                 classOf[SimpleFeature])
- 
-    println("\tSize of query response from RDD:     " ++ rdd.count.toString)
-    println("\tSize of query response from GeoWave: " ++ len.toString)
+                                 classOf[SimpleFeature]).map({ case (gwIndex, sf) => sf})
+
+    println(s"The count from GW: ${rdd.count()}")
+  }
+
+
+  def main(args: Array[String]): Unit = {
+    println("Reading with GeoWave...")
+    readGW()
+    println("Reading with GeoTrellis...")
+    readGT()
+    println("Writing with GeoTrellis...")
+    writeGT()
   }
 }

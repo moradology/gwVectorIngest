@@ -96,7 +96,7 @@ class GDeltLine (val globalEventId: Integer,           val day: Integer,
                  val actor2Type3Code: String,          val isRootEvent: Integer,
                  val eventCode: String,                val eventBaseCode: String,
                  val eventRootCode: String,            val quadClass: Integer,
-                 val goldsteinScale: java.lang.Double, val numMentions: Integer,
+                 val goldsteinScale: Double,           val numMentions: Integer,
                  val numSources: Integer,              val numArticles: Integer,
                  val avgTone: java.lang.Double,        val actor1Geo_Type: Integer,
                  val actor1Geo_Fullname: String,       val actor1Geo_CountryCode: String,
@@ -110,5 +110,5 @@ class GDeltLine (val globalEventId: Integer,           val day: Integer,
                  val actionGeo_ADM1Code: String,       val actionGeo_Lat: java.lang.Double,
                  val actionGeo_Long: java.lang.Double, val actionGeo_FeatureID: Integer,
                  val dateAdded: Integer,               val sourceURL: String)
-  
+
 

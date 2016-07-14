@@ -13,7 +13,7 @@ import org.opengis.feature.simple._
 
 import com.vividsolutions.jts.geom.Coordinate
 
-import scala.util.Try
+import scala.util.{Try, Success, Failure}
 
 import com.example.vector._
 
@@ -95,7 +95,7 @@ object GdeltIngestMain {
     val index = GdeltIngest.createSpatialIndex
 
     val indexWriter = ds.createWriter(adapter, index).asInstanceOf[IndexWriter[SimpleFeature]]
-    
+
 
     iters foreach { iter =>
       iter foreach { s =>
@@ -116,25 +116,24 @@ object GdeltIngestMain {
       System.exit(-1)
     }
 
-    val inputs = (args flatMap { 
-      filename => 
-        val zf = Try(new ZipFile(filename))
-        if (zf.isSuccess)
-          zf.get.entries.map { e => scala.io.Source.fromInputStream(zf.get.getInputStream(e)) }
-        else
-          List(scala.io.Source.fromFile(filename))
+    val inputs = (args flatMap {
+      filename =>
+        Try(new ZipFile(filename)) match {
+          case Success(zipfile) =>
+            zipfile.entries.map { e => scala.io.Source.fromInputStream(zipfile.getInputStream(e)) }
+          case _ =>
+            List(scala.io.Source.fromFile(filename))
+        }
     }).map(_.getLines)
 
-    val maybeBAO = Try(GdeltIngest.getAccumuloOperationsInstance("localhost","geowave","root","password","gwGDELT"))
-    if (maybeBAO.isFailure) {
-      println("Could not create Accumulo instance")
-      println(maybeBAO)
-      System.exit(-1)
+    Try(GdeltIngest.getAccumuloOperationsInstance("localhost","geowave","root","password","gwGDELT")) match {
+      case Failure(f) =>
+        println("Could not create Accumulo instance")
+        println(f)
+        System.exit(-1)
+      case Success(bao) =>
+        val ds = GdeltIngest.getGeowaveDataStore(bao)
+        ingestFiles(inputs, ds);
     }
-    val bao = maybeBAO.get
-    val ds = GdeltIngest.getGeowaveDataStore(bao)
-
-    ingestFiles(inputs, ds);
-
   }
 }

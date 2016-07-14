@@ -25,32 +25,36 @@ object GeoWaveDemoApp {
   def main(args: Array[String]) = {
     Logger.getRootLogger().setLevel(Level.INFO)
 
-    val interactive = 
+    val interactive =
       if (System.getProperty("interactive") != null)
-        java.lang.Boolean.parseBoolean(System.getProperty("interactive")) 
+        java.lang.Boolean.parseBoolean(System.getProperty("interactive"))
       else
         true
 
-    val password = 
-      if (System.getProperty("password") != null) 
-        System.getProperty("password") 
+    val password =
+      if (System.getProperty("password") != null)
+        System.getProperty("password")
       else
         "password"
 
     val tempDir = Files.createTempDir()
-    val instanceName = 
-      if (System.getProperty("instanceName") != null) 
-        System.getProperty("instanceName") 
+    val instanceName =
+      if (System.getProperty("instanceName") != null)
+        System.getProperty("instanceName")
       else
         "geowave"
 
     val miniAccumuloConfig = new MiniAccumuloConfigImpl(tempDir, password)
-      .setNumTservers(2).setInstanceName(instanceName).setZooKeeperPort(2181)
+      .setNumTservers(2)
+      .setInstanceName(instanceName)
+      .setZooKeeperPort(2181)
+
     miniAccumuloConfig.setProperty(Property.MONITOR_PORT, "50095")
 
     val accumulo = MiniAccumuloClusterFactory.newAccumuloCluster(
       miniAccumuloConfig,
-      classOf[App])
+      classOf[App]
+    )
 
     println("starting up ...")
     accumulo.start()
@@ -68,22 +72,23 @@ object GeoWaveDemoApp {
     }
     else {
       Runtime.getRuntime().addShutdownHook(
-	new Thread() { 
+	      new Thread() {
           new Runnable {
-	    def run() = {
-	      try {
-	        accumulo.stop()
-	      }
-	      catch {
-	        case e: Exception => println("Error shutting down accumulo.")
-	      }
-	      println("Shutting down!")
-	    }
+            def run() = {
+              try {
+                accumulo.stop()
+              }
+              catch {
+                case e: Exception => println("Error shutting down accumulo.")
+              }
+              println("Shutting down!")
+            }
           }
-	})
+        }
+      )
 
       while (true) {
-	Thread.sleep(TimeUnit.MILLISECONDS.convert(1L,TimeUnit.HOURS))
+	      Thread.sleep(TimeUnit.MILLISECONDS.convert(1L,TimeUnit.HOURS))
       }
     }
   }

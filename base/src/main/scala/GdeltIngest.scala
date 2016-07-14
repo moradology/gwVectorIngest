@@ -38,7 +38,8 @@ object GdeltIngest {
       new AccumuloSecondaryIndexDataStore(instance),
       new AccumuloAdapterIndexMappingStore(instance),
       instance,
-      options)
+      options
+    )
   }
 
   def getAccumuloOperationsInstance(
@@ -53,7 +54,8 @@ object GdeltIngest {
       accumuloInstance,
       accumuloUser,
       accumuloPass,
-      geowaveNamespace)
+      geowaveNamespace
+    )
   }
 
   def createDataAdapter (sft: SimpleFeatureType): FeatureDataAdapter = {
@@ -70,7 +72,7 @@ object GdeltIngest {
    * what our data looks like so the serializer (FeatureDataAdapter for this
    * case) can know how to store it. Features/Attributes are also a general
    * convention of GIS systems in general.
-   * 
+   *
    * @return Simple Feature definition for our demo point feature
    */
   def createGdeltFeatureType(): SimpleFeatureType = {
@@ -215,6 +217,4 @@ object GdeltIngest {
 
     return builder.buildFeatureType()
   }
-
-
 }
