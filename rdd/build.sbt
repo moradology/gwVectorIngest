@@ -1,4 +1,4 @@
-name := "GeowaveVectorQueryRDD2"
+name := "GeowaveVectorQueryRDD"
 
 libraryDependencies ++= Seq(
   "com.azavea.geotrellis" %% "geotrellis-geowave" % "1.0.0-SNAPSHOT",

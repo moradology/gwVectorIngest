@@ -30,6 +30,7 @@ import org.apache.log4j.Logger
 import org.apache.log4j.Level
 import com.example.vector._
 import org.apache.spark.rdd._
+import org.apache.spark._
 
 import java.io.Closeable
 import scala.util.control.NonFatal
@@ -37,6 +38,8 @@ import scala.util.{Failure, Try, Success}
 
 
 object RddWrite {
+
+  implicit val sc = SparkUtils.createSparkContext("gwVectorIngestRDD")
 
   val zookeeper = "localhost"
   val instance = "geowave"
@@ -50,6 +53,7 @@ object RddWrite {
     // Necessary for going between Feature and SimpleFeature
     implicit def id(x: Map[String, Any]): Seq[(String, Any)] = x.toSeq
     val philly = Point(-75.5859375, 40.713955826286046)
+    val philly2 = Point(-75.585, 40.71395)
 
     val builder = new SimpleFeatureTypeBuilder()
     val ab = new AttributeTypeBuilder()
@@ -57,7 +61,7 @@ object RddWrite {
     builder.add(ab.binding(classOf[jts.Point]).nillable(false).buildDescriptor("geometry"))
     val featureType = builder.buildFeatureType()
 
-    val features = Array(Feature(philly, Map[String, Any]()))
+    val features = Array(Feature(philly, Map[String, Any]()), Feature(philly2, Map[String, Any]()))
     val featureRDD = sc.parallelize(features)
 
     val gtReadRDD1 = GeoWaveFeatureRDDReader.read(
